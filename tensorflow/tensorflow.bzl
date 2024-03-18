@@ -2744,6 +2744,7 @@ def gpu_py_test(
         test_tags = tags
         if config == "gpu":
             test_tags = test_tags + tf_gpu_tests_tags()
+            data = data + if_oss(if_cuda(["@cuda_nvcc//:bin", "@cuda_nvcc//:nvvm"]))
         if config == "2gpu":
             test_tags = test_tags + two_gpu_tags
             if "requires-gpu-nvidia" in test_tags:
