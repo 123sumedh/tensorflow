@@ -2295,6 +2295,15 @@ Status SetHloShardingPostProcessing(
       continue;
     } else {
       if (inst->shape().IsTuple()) {
+        // While we do not support nested tuples fully, this is a hack to get
+        // things to work in some cases (specifically observed for the llama and
+        // gemma models) where nested tuples as used as inputs/outputs of the
+        // kOptimizationBarrier instruction.
+        if (absl::c_any_of(
+                inst->shape().tuple_shapes(),
+                [](const Shape& shape) { return shape.IsTuple(); })) {
+          continue;
+        }
         switch (inst->opcode()) {
           case HloOpcode::kReduce:
           case HloOpcode::kCustomCall:
@@ -3402,6 +3411,14 @@ AutoShardingImplementation::SaveAndRemoveShardingAnnotation(
         spmd::SaveShardingForInstruction(inst,
                                          /* save_for_copy_users */ false,
                                          preserve_shardings);
+      }
+      if (inst->has_sharding() &&
+          spmd::IsShardingMisaligned(inst->sharding(), inst->shape())) {
+        LOG(WARNING)
+            << "Instruction " << inst->name()
+            << " has a user sharding annotation that is misaligned. Shape: "
+            << inst->shape().ToString()
+            << ". Sharding:" << inst->sharding().ToString();
       }
     }
   }
