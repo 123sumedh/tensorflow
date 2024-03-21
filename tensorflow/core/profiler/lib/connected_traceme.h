@@ -18,6 +18,7 @@ limitations under the License.
 #include <string>
 #include <utility>
 
+#include "absl/base/macros.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 #include "tensorflow/core/profiler/lib/context_types.h"
@@ -28,8 +29,10 @@ limitations under the License.
 namespace tensorflow {
 namespace profiler {
 
-using tsl::profiler::TraceMeConsumer;  // NOLINT
-using tsl::profiler::TraceMeProducer;  // NOLINT
+using TraceMeConsumer ABSL_DEPRECATE_AND_INLINE() =
+    tsl::profiler::TraceMeConsumer;  // NOLINT
+using TraceMeProducer ABSL_DEPRECATE_AND_INLINE() =
+    tsl::profiler::TraceMeProducer;  // NOLINT
 
 }  // namespace profiler
 }  // namespace tensorflow

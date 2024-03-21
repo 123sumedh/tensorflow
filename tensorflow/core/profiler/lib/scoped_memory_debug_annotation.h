@@ -20,13 +20,16 @@ limitations under the License.
 #include <string>
 #include <utility>
 
+#include "absl/base/macros.h"
 #include "tsl/profiler/lib/scoped_memory_debug_annotation.h"
 
 namespace tensorflow {
 namespace profiler {
 
-using tsl::profiler::MemoryDebugAnnotation;        // NOLINT
-using tsl::profiler::ScopedMemoryDebugAnnotation;  // NOLINT
+using MemoryDebugAnnotation ABSL_DEPRECATE_AND_INLINE() =
+    tsl::profiler::MemoryDebugAnnotation;  // NOLINT
+using ScopedMemoryDebugAnnotation ABSL_DEPRECATE_AND_INLINE() =
+    tsl::profiler::ScopedMemoryDebugAnnotation;  // NOLINT
 
 }  // namespace profiler
 }  // namespace tensorflow

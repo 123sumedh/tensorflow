@@ -19,6 +19,7 @@ limitations under the License.
 #include <string>
 #include <utility>
 
+#include "absl/base/macros.h"
 #include "absl/strings/string_view.h"
 #include "tensorflow/core/platform/logging.h"
 #include "tensorflow/core/platform/macros.h"
@@ -34,13 +35,17 @@ limitations under the License.
 namespace tensorflow {
 namespace profiler {
 
-using tsl::profiler::GetTFTraceMeLevel;   // NOLINT
-using tsl::profiler::kCritical;           // NOLINT
-using tsl::profiler::kInfo;               // NOLINT
-using tsl::profiler::kVerbose;            // NOLINT
-using tsl::profiler::TfOpDetailsEnabled;  // NOLINT
-using tsl::profiler::TraceMe;             // NOLINT
-using tsl::profiler::TraceMeLevel;        // NOLINT
+using TraceMe ABSL_DEPRECATE_AND_INLINE() = tsl::profiler::TraceMe;  // NOLINT
+using TraceMeLevel ABSL_DEPRECATE_AND_INLINE() =
+    tsl::profiler::TraceMeLevel;  // NOLINT
+
+ABSL_DEPRECATE_AND_INLINE()
+inline int GetTFTraceMeLevel(bool is_expensive) {
+  return tsl::profiler::GetTFTraceMeLevel(is_expensive);
+}
+
+ABSL_DEPRECATE_AND_INLINE()
+inline bool TfOpDetailsEnabled() { return tsl::profiler::TfOpDetailsEnabled(); }
 
 }  // namespace profiler
 }  // namespace tensorflow
