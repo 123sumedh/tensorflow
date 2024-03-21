@@ -23,6 +23,7 @@ cc_library(
         ":context",
         ":kernel_runner_utils",
         "//tensorflow/core:framework",
+        "//tensorflow/core/framework:tensor_proto_cc",
         "//tensorflow/core/tfrt/mlrt/bytecode:function",
         "//tensorflow/core/tfrt/mlrt/interpreter:async_handle",
         "//tensorflow/core/tfrt/mlrt/interpreter:attribute_span",

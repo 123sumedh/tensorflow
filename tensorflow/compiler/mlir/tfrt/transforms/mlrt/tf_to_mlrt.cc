@@ -39,6 +39,7 @@ limitations under the License.
 #include "tensorflow/compiler/mlir/tensorflow/ir/tf_dialect.h"
 #include "tensorflow/compiler/mlir/tensorflow/ir/tf_ops.h"
 #include "tensorflow/compiler/mlir/tensorflow/translate/export_tf_dialect_op.h"
+#include "tensorflow/compiler/mlir/tensorflow/utils/convert_tensor.h"
 #include "tensorflow/compiler/mlir/tfrt/constants.h"
 #include "tensorflow/compiler/mlir/tfrt/ir/mlrt/mlrt_dialect.h"
 #include "tensorflow/compiler/mlir/tfrt/ir/mlrt/mlrt_ops.h"
@@ -441,6 +442,18 @@ class ExecuteOpConversion final : public mlir::ConversionPattern {
       mlir::ConversionPatternRewriter &rewriter) const override {
     // TODO(b/173017701): Avoid fallback for ops within XLA GPU clusters.
     if (!UseFallback(op)) return mlir::failure();
+
+    if (auto const_op = llvm::dyn_cast<mlir::TF::ConstOp>(op)) {
+      tensorflow::TensorProto tensor_proto;
+      auto status = ConvertToTensorProto(const_op.getValue(), &tensor_proto);
+      if (!status.ok())
+        return const_op.emitError(tsl::NullTerminatedMessage(status));
+
+      rewriter.replaceOpWithNewOp<tf_mlrt::ConstOp>(
+          op, rewriter.getType<tf_mlrt::TFTensorType>(),
+          tensor_proto.SerializeAsString());
+      return mlir::success();
+    }
 
     // The assign_op_key pass should have ran.
     if (!op->hasAttr(tensorflow::tfrt_compiler::kOpKeyAttrName))
